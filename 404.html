@@ -3,25 +3,27 @@
 <head>
     <title>URL Shortener</title>
     <script>
-        async function handleRedirect() {
-            const shortCode = window.location.pathname.slice(1);
-            const apiUrl = 'https://script.google.com/macros/s/AKfycbx0L5mKP8D1Hm6FwMT05SxTYFpg_bdqRdNRXqtOaGYBkf0oMDGx_dZQjXrhtHq-flw2Sw/exec?code=' + shortCode;
-
-            try {
-                const response = await fetch(apiUrl);
-                const result = await response.json();
-
-                if (result.status === 'success') {
-                    window.location.href = result.message;
-                } else {
-                    document.body.innerHTML = 'URL Not Found';
-                }
-            } catch (error) {
-                document.body.innerHTML = 'Redirect Error';
+        const apiUrl = 'https://script.google.com/macros/s/AKfycbzqQPnCUZKGYqmWGVFgOGDEtN_sSGhAYH3-7Zg6_HtNLHh3gbxgJbMiw_XDy_6SYyFi/exec';
+        
+        window.onload = function() {
+            const path = window.location.pathname.replace('/', '');
+            
+            if (path) {
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        const match = data.find(row => row.shortcode === path);
+                        if (match) {
+                            window.location.href = match.destination_url;
+                        } else {
+                            document.body.innerHTML = 'Shortcode not found';
+                        }
+                    })
+                    .catch(error => {
+                        document.body.innerHTML = 'Redirect Error';
+                    });
             }
-        }
-
-        window.onload = handleRedirect;
+        };
     </script>
 </head>
 <body>
